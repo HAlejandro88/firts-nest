@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Document } from 'mongoose';
 
-interface Task {
+export interface Task extends Document {
     id?: number;
     title: string;
     description: string;
@@ -9,33 +11,30 @@ interface Task {
 
 @Injectable()
 export class TasksService {
-     task: Task[] =  [
-        {
-            id: 1,
-            title: 'testing',
-            description: 'tarea prueba',
-            done: false
-        },
-        {
-            id: 2,
-            title: 'nest',
-            description: 'tarea prueba',
-            done: false
-        },
-        {
-            id: 1,
-            title: 'angular',
-            description: 'tarea prueba',
-            done: false
-        }
-    ];
 
-    getTasks(): Task[] {
+    constructor(@InjectModel('Task') private taskModel:Model<Task>) {}
+
+    
+
+    async findTasks() {
+        return await this.taskModel.find();
+    }
+
+    async getTask(id: string) {
+        try {
+            return await this.taskModel.findById(id);
+        } catch (error) {
+            console.log(error);
+        }
+        
+    }
+
+    /* getTasks(): Task[] {
         return this.task;
     }
 
 
     getTask(id:number) {
         return this.task.filter(_task => _task.id === id);
-    }
+    } */
 }
